@@ -1,0 +1,68 @@
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns="http://www.springframework.org/schema/beans"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc 
+   http://www.springframework.org/schema/mvc/spring-mvc.xsd
+   http://www.springframework.org/schema/beans 
+   http://www.springframework.org/schema/beans/spring-beans.xsd 
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+   <context:component-scan base-package="com.deep.corp" />
+   
+   <!-- To pick up the application specific constant values from prop files -->
+   <!-- <context:property-placeholder location="resources/application.properties"/> -->
+
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <property name="prefix" value="/WEB-INF/jsp/" />
+      <property name="suffix" value=".jsp" />
+   </bean>
+   
+   <!-- Configure to plugin JSON as request and response in method handler -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jsonMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Configure bean to convert JSON to POJO and vice versa -->
+	<bean id="jsonMessageConverter" 
+	class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+	
+	
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory"
+	 class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	 
+	 <property name="dataSource" ref="dataSource"></property>
+	 
+	 <property name="packagesToScan">
+	 	<list>
+	 		<value>com.deep.corp.bean</value>
+	 	</list>
+	 </property>
+	 
+	 <property name="hibernateProperties">
+	 	<props>
+	 		<prop key="hibernate.dialect">com.enigmabridge.hibernate.dialect.SQLiteDialect</prop>
+	 		<prop key="hibernate.show_sql">true</prop>
+	 		<prop key="hibernate.format_sql">true</prop>
+	 	</props>
+	 </property>
+	 
+	</bean>
+	
+	<!-- Datasource which will be managed by Spring Framework -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.sqlite.JDBC"></property>
+		<property name="url" value="jdbc:sqlite:/home/deep/database.db"></property>
+	</bean>
+
+</beans>
